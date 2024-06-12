@@ -1,0 +1,46 @@
+{
+  "stuff": [
+    {
+      "id": "3659",
+      "name": "cikuwa",
+      "price": "5",
+      "category": "junkfood"
+    },
+    {
+      "id": "fc22",
+      "name": "Carrot",
+      "price": "10",
+      "category": "Vegetablee"
+    },
+    {
+      "id": "d5c0",
+      "name": "Pastry",
+      "price": "15",
+      "category": "Bread"
+    },
+    {
+      "id": "c2c6",
+      "name": "Dragon Fruit",
+      "price": "10",
+      "category": "fruit"
+    }
+  ],
+  "category": [
+    {
+      "id": "dcf5",
+      "name": "Vegetablee"
+    },
+    {
+      "id": "d50c",
+      "name": "junkfood"
+    },
+    {
+      "id": "6374",
+      "name": "fruit"
+    },
+    {
+      "id": "bab3",
+      "name": "Bread"
+    }
+  ]
+}

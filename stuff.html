@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #001f3f;
+            padding: 10px 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: #fff;
+        }
+
+        .navbar h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar a:hover {
+            background-color: #0056b3;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #001f3f;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group button {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #0056b3;
+        }
+
+        .form-group button {
+            background-color: #001f3f;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            max-width: 100%; /* Membatasi lebar tabel */
+            border-collapse: collapse;
+            margin-top: 20px;
+            margin: 0 auto; /* Menengahkan tabel */
+        }
+
+        th,
+        td {
+            padding: 10px; /* Mengurangi padding */
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #001f3f;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .table-container table {
+            width: 100%;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-container th,
+        .table-container td {
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-buttons button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            transition: background-color 0.3s;
+        }
+
+        .action-buttons .edit-btn {
+            background-color: #ffc107;
+        }
+
+        .action-buttons .delete-btn {
+            background-color: #dc3545;
+        }
+
+        .action-buttons button:hover {
+            opacity: 0.8;
+        }
+
+        .alert {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+
+    <div class="navbar">
+        <h1>Dashboard</h1>
+        <div>
+            <a href="Dasboard.html">Home</a>
+            <a href="stuff.html">Stuff</a>
+            <a href="category.html">Categories</a>
+        </div>
+    </div>
+<div class="container">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="result">
+                <tr>
+                    <td colspan="5" align="center">Loading...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="alert" class="alert" style="display: none;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+    const GetStuff = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/stuff');
+            const stuffs = response.data;
+            let bucket = "";
+            stuffs.forEach((stuff, index) => {
+                bucket += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${stuff.name}</td>
+                        <td>${stuff.category}</td>
+                        <td>$${stuff.price}</td>
+                        <td class="action-buttons">
+                            <button class="edit-btn" onclick="EditStuff('${stuff.id}')">Edit</button>
+                            <button class="delete-btn" onclick="DeleteStuff('${stuff.id}')">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('result').innerHTML = bucket;
+        } catch (error) {
+            showAlert('Maaf server sedang offline', 'danger');
+        }
+    };
+
+    const DeleteStuff = async (id) => {
+        const confirmed = confirm('Apakah ini akan dihapus?');
+        if (confirmed) {
+            try {
+                await axios.delete(`http://localhost:3000/stuff/${id}`);
+                GetStuff();
+                showAlert('Barang berhasil dihapus', 'success');
+            } catch (error) {
+                showAlert('Gagal menghapus barang', 'danger');
+            }
+        }
+    };
+
+    const SaveStuff = async () => {
+        const nameVal = document.getElementById('name').value;
+        const priceVal = document.getElementById('price').value;
+        const categoryVal = document.getElementById('category').value;
+        try {
+            await axios.post('http://localhost:3000/stuff', {
+                name: nameVal,
+                price: priceVal,
+                category: categoryVal,
+            });
+            alert('Barang berhasil disimpan');
+            GetStuff();
+            showAlert('Barang berhasil disimpan', 'success');
+        } catch (error) {
+            showAlert('Maaf server sedang offline', 'danger');
+        }
+    };
+
+    const EditStuff = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:3000/stuff/${id}`);
+            const stuff = response.data;
+            document.getElementById('name').value = stuff.name;
+            document.getElementById('price').value = stuff.price;
+            document.getElementById('category').value = stuff.category;
+            document.getElementById('trigger').innerText = "Update";
+            document.getElementById('trigger').setAttribute('onclick', `UpdateStuff('${id}')`);
+        } catch (error) {
+            showAlert('Gagal memuat data barang', 'danger');
+        }
+    };
+
+    const UpdateStuff = async (id) => {
+        const nameVal = document.getElementById('name').value;
+        const priceVal = document.getElementById('price').value;
+        const categoryVal = document.getElementById('category').value;
+        try {
+            await axios.patch
+                (`http://localhost:3000/stuff/${id}`, {
+                    name: nameVal,
+                    price: priceVal,
+                    category: categoryVal,
+                });
+            alert('Barang berhasil diupdate');
+            document.getElementById('name').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('category').value = '';
+            document.getElementById('trigger').innerText = "Save";
+            document.getElementById('trigger').setAttribute('onclick', `SaveStuff()`);
+            GetStuff();
+            showAlert('Barang berhasil diupdate', 'success');
+        } catch (error) {
+            showAlert('Gagal mengupdate barang', 'danger');
+        }
+    };
+
+    const GetCategory = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/category');
+            const categories = response.data;
+            let options = "";
+            categories.forEach(category => {
+                options += `<option value="${category.name}">${category.name}</option>`;
+            });
+            document.getElementById('category').innerHTML = options;
+        } catch (error) {
+            showAlert('Maaf server sedang offline', 'danger');
+        }
+    };
+
+    const showAlert = (message, type) => {
+        const alert = document.getElementById('alert');
+        alert.innerText = message;
+        alert.style.display = 'block';
+        alert.className = `alert alert-${type}`;
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 3000);
+    };
+
+    GetStuff();
+    GetCategory();
+</script>
